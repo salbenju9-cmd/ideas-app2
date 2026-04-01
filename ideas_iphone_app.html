@@ -1,0 +1,2359 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Ideas" />
+  <meta name="theme-color" content="#2563eb" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <link rel="manifest" href="./manifest_ideas_app.webmanifest" />
+  <link rel="apple-touch-icon" href="./icon-180.png" />
+  <link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png" />
+  <link rel="icon" type="image/png" sizes="512x512" href="./icon-512.png" />
+  <title>Gestor de Ideas</title>
+  <style>
+    :root {
+      --bg: #f3f6fb;
+      --card: #ffffff;
+      --text: #1f2937;
+      --muted: #6b7280;
+      --line: #d9e1ea;
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --success: #16a34a;
+      --warning: #ea580c;
+      --danger: #dc2626;
+      --shadow: 0 10px 24px rgba(0,0,0,.08);
+      --radius: 14px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 11px;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    header {
+      background: linear-gradient(135deg, #1d4ed8, #2563eb);
+      color: white;
+      padding: 14px 10px;
+      box-shadow: var(--shadow);
+    }
+
+    header h1 {
+      margin: 0 0 4px;
+      font-size: 20px;
+    }
+
+    header p {
+      margin: 0;
+      opacity: 0.95;
+      font-size: 9px;
+    }
+
+    .container {
+      max-width: 1550px;
+      margin: 12px auto;
+      padding: 0 8px 16px;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 440px 1fr;
+      gap: 10px;
+      align-items: start;
+    }
+
+    .card {
+      background: var(--card);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+      padding: 10px;
+    }
+
+    .card h2 { margin-top: 0; font-size: 15px; }
+    .card h3 { margin-top: 0; font-size: 13px; }
+    .card h4 { margin-top: 0; font-size: 12px; }
+
+    label {
+      display: block;
+      font-weight: bold;
+      margin: 6px 0 3px;
+      font-size: 9px;
+    }
+
+    input, textarea, select, button {
+      width: 100%;
+      padding: 5px 6px;
+      border-radius: 6px;
+      border: 1px solid var(--line);
+      font-size: 9px;
+      font-family: inherit;
+    }
+
+    textarea {
+      min-height: 45px;
+      resize: vertical;
+    }
+
+    button {
+      border: none;
+      cursor: pointer;
+      font-weight: bold;
+      transition: 0.2s;
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+    }
+
+    .btn-primary { background: var(--primary); color: white; }
+    .btn-primary:hover { background: var(--primary-dark); }
+    .btn-success { background: var(--success); color: white; }
+    .btn-warning { background: var(--warning); color: white; }
+    .btn-danger { background: var(--danger); color: white; }
+    .btn-secondary { background: #e5e7eb; color: #111827; }
+
+    .row-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+    }
+
+    .actions {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-top: 8px;
+    }
+
+    .actions button {
+      width: auto;
+      min-width: 90px;
+      font-size: 9px;
+      padding: 5px 7px;
+    }
+
+    .split-line {
+      border-top: 1px solid var(--line);
+      margin: 10px 0 0;
+      padding-top: 8px;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 6px;
+      margin-bottom: 10px;
+    }
+
+    .stat {
+      background: #f8fafc;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 8px;
+    }
+
+    .stat .label {
+      color: var(--muted);
+      font-size: 8px;
+      margin-bottom: 4px;
+    }
+
+    .stat .value {
+      font-size: 16px;
+      font-weight: bold;
+    }
+
+    .toolbar {
+      display: grid;
+      grid-template-columns: 1.6fr 1fr 1fr 1fr;
+      gap: 6px;
+      margin-bottom: 10px;
+    }
+
+    .selection-toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 10px;
+      padding: 8px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #f8fafc;
+      align-items: center;
+    }
+
+    .selection-toolbar button {
+      width: auto;
+      min-width: 100px;
+      font-size: 9px;
+      padding: 5px 7px;
+    }
+
+    .selection-count {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: bold;
+    }
+
+    #visibleCount {
+      font-size: 16px;
+      color: var(--text);
+    }
+
+    .selection-push {
+      margin-left: auto;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .idea-list {
+      display: grid;
+      gap: 8px;
+    }
+
+    .idea {
+      background: white;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 8px;
+    }
+
+    .idea-top {
+      display: flex;
+      align-items: start;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 6px;
+    }
+
+    .idea-title {
+      margin: 0;
+      font-size: 12px;
+    }
+
+    .badges {
+      display: flex;
+      gap: 4px;
+      flex-wrap: wrap;
+      margin-top: 4px;
+    }
+
+    .badge {
+      display: inline-block;
+      border-radius: 999px;
+      padding: 3px 6px;
+      font-size: 8px;
+      font-weight: bold;
+    }
+
+    .tipo-llamada { background: #dbeafe; color: #1d4ed8; }
+    .tipo-mejora { background: #fae8ff; color: #a21caf; }
+    .tipo-inversion { background: #ede9fe; color: #6d28d9; }
+    .tipo-mantenimiento { background: #dcfce7; color: #15803d; }
+    .tipo-administrativa { background: #fef3c7; color: #92400e; }
+    .tipo-recursos_humanos { background: #fee2e2; color: #b91c1c; }
+    .tipo-reunion_visita { background: #d1fae5; color: #065f46; }
+    .tipo-medio_ambiente { background: #cffafe; color: #155e75; }
+    .tipo-prevencion_riesgos { background: #ffe4e6; color: #be123c; }
+
+    .prio-baja { background: #f3f4f6; color: #374151; }
+    .prio-media { background: #fef3c7; color: #92400e; }
+    .prio-alta { background: #fee2e2; color: #b91c1c; }
+    .prio-urgente { background: #fecaca; color: #7f1d1d; }
+
+    .estado-pendiente { background: #e0f2fe; color: #075985; }
+    .estado-en_curso { background: #fef3c7; color: #92400e; }
+    .estado-hecha { background: #dcfce7; color: #166534; }
+    .estado-descartada { background: #f3f4f6; color: #4b5563; }
+
+    .meta, .small {
+      font-size: 8px;
+      color: var(--muted);
+      line-height: 1.4;
+    }
+
+    .extra {
+      margin-top: 6px;
+      padding: 6px;
+      border-radius: 6px;
+      border: 1px solid #e5e7eb;
+      background: #f8fafc;
+      font-size: 9px;
+      color: #374151;
+      white-space: pre-wrap;
+    }
+
+    .preserve-lines {
+      white-space: pre-wrap;
+    }
+
+    .idea-actions {
+      display: flex;
+      gap: 5px;
+      flex-wrap: wrap;
+      margin-top: 8px;
+    }
+
+    .idea-actions button {
+      width: auto;
+      padding: 5px 7px;
+      font-size: 9px;
+    }
+
+    .empty {
+      text-align: center;
+      color: var(--muted);
+      padding: 14px 10px;
+      border: 1px dashed var(--line);
+      border-radius: 8px;
+      background: #fafafa;
+      font-size: 9px;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .section-mini {
+      margin-top: 8px;
+      padding: 8px;
+      border-radius: 6px;
+      background: #f8fafc;
+      border: 1px solid var(--line);
+    }
+
+    .status-box {
+      margin-top: 8px;
+      padding: 8px;
+      border-radius: 6px;
+      background: #eef4ff;
+      border: 1px solid #bfd4ff;
+    }
+
+    .status-box strong {
+      display: block;
+      margin-bottom: 4px;
+      font-size: 9px;
+      color: #1e40af;
+    }
+
+    .status-ok { color: #166534; }
+    .status-warn { color: #92400e; }
+    .status-error { color: #b91c1c; }
+
+    .task-card {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 8px;
+      margin-top: 8px;
+      background: #fafcff;
+    }
+
+    .task-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 6px;
+    }
+
+    .task-header h4 {
+      margin: 0;
+      font-size: 11px;
+    }
+
+    .task-remove-btn {
+      width: auto;
+      padding: 4px 6px;
+      background: var(--danger);
+      color: white;
+      border-radius: 6px;
+      font-size: 9px;
+    }
+
+    .select-box {
+      width: auto;
+      transform: scale(1);
+      margin-right: 6px;
+      cursor: pointer;
+    }
+
+    .idea-top-left {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      flex: 1;
+    }
+
+    @media (max-width: 1100px) {
+      .layout {
+        grid-template-columns: 1fr;
+      }
+      .toolbar {
+        grid-template-columns: 1fr;
+      }
+      .stats {
+        grid-template-columns: 1fr 1fr;
+      }
+      .row-2 {
+        grid-template-columns: 1fr;
+      }
+      .selection-push {
+        width: 100%;
+        margin-left: 0;
+      }
+    }
+
+    @media (max-width: 560px) {
+      .stats {
+        grid-template-columns: 1fr;
+      }
+      .quick-summary {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    .mobile-note {
+      margin-top: 8px;
+      padding: 8px;
+      border-radius: 6px;
+      background: #fff7ed;
+      border: 1px solid #fdba74;
+      font-size: 9px;
+      color: #9a3412;
+    }
+
+    .quick-summary {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .quick-tile {
+      background: linear-gradient(180deg, #ffffff, #f8fbff);
+      border: 1px solid #dbe7f5;
+      border-radius: 12px;
+      padding: 10px;
+      box-shadow: var(--shadow);
+    }
+
+    .quick-tile .k {
+      display: block;
+      font-size: 10px;
+      color: var(--muted);
+      margin-bottom: 4px;
+    }
+
+    .quick-tile .v {
+      display: block;
+      font-size: 22px;
+      font-weight: bold;
+      line-height: 1.1;
+    }
+
+    .install-box {
+      margin: 10px 0 0;
+      padding: 10px 12px;
+      border-radius: 10px;
+      background: rgba(255,255,255,.14);
+      border: 1px solid rgba(255,255,255,.28);
+      font-size: 10px;
+    }
+
+    .standalone body,
+    body.standalone {
+      background: #eef4fb;
+    }
+
+    body.standalone header {
+      padding-top: calc(16px + env(safe-area-inset-top));
+    }
+
+    body.standalone .container {
+      padding-bottom: calc(18px + env(safe-area-inset-bottom));
+    }
+
+    .offline-chip {
+      display: inline-block;
+      margin-left: 6px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.18);
+      border: 1px solid rgba(255,255,255,.22);
+      font-size: 10px;
+      vertical-align: middle;
+    }
+
+
+    @media (max-width: 900px) {
+      body { font-size: 13px; }
+      header h1 { font-size: 24px; }
+      header p { font-size: 11px; }
+      .container { max-width: 100%; padding: 0 8px 24px; }
+      .card h2 { font-size: 18px; }
+      .card h3 { font-size: 15px; }
+      label, input, textarea, select, button, .actions button, .idea-actions button, .small, .meta { font-size: 12px; }
+      .stat .label { font-size: 10px; }
+      .badge { font-size: 10px; }
+      .idea-title { font-size: 15px; }
+      .selection-count, #visibleCount { font-size: 14px; }
+      input, textarea, select, button { padding: 10px 10px; }
+      .actions button, .idea-actions button { min-height: 40px; }
+    }
+
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Gestor de Ideas <span id="offlineChip" class="offline-chip" style="display:none;">Modo sin conexión</span></h1>
+    <p>Registro de llamadas, reuniones/visitas y gestión de ideas con plan de acciones.</p>
+    <div class="install-box" id="iosInstallHelp">En iPhone: abre esta página en Safari, pulsa <strong>Compartir</strong> y elige <strong>Añadir a pantalla de inicio</strong>. Después se abrirá como una app, a pantalla completa.</div>
+  </header>
+
+  <div class="container">
+    <section class="quick-summary" id="quickSummary">
+      <div class="quick-tile"><span class="k">Pendientes</span><span class="v" id="qsPendientes">0</span></div>
+      <div class="quick-tile"><span class="k">Urgentes</span><span class="v" id="qsUrgentes">0</span></div>
+      <div class="quick-tile"><span class="k">Hoy</span><span class="v" id="qsHoy">0</span></div>
+      <div class="quick-tile"><span class="k">Mañana</span><span class="v" id="qsManana">0</span></div>
+    </section>
+    <div class="layout">
+      <section class="card">
+        <h2 id="formTitle">Nueva idea</h2>
+
+        <form id="ideaForm">
+          <input type="hidden" id="ideaId" />
+
+          <label for="tipo">Tipo</label>
+          <select id="tipo" required>
+            <option value="llamada">LLAMADA</option>
+            <option value="mejora">MEJORA</option>
+            <option value="inversion">INVERSION</option>
+            <option value="mantenimiento">MANTENIMIENTO</option>
+            <option value="administrativa">ADMINISTRATIVA</option>
+            <option value="recursos_humanos">RECURSOS HUMANOS</option>
+            <option value="reunion_visita">REUNION/VISITA</option>
+            <option value="medio_ambiente">MEDIO AMBIENTE</option>
+            <option value="prevencion_riesgos">PREVENCION DE RIESGOS</option>
+          </select>
+
+          <label for="titulo">Título</label>
+          <input id="titulo" type="text" placeholder="Escribe un título" required />
+
+          <label for="descripcion">Descripción</label>
+          <textarea id="descripcion" placeholder="Detalles, observaciones o contexto..."></textarea>
+
+          <div id="bloqueFechaGeneral">
+            <div class="row-2">
+              <div>
+                <label for="fecha">Fecha prevista</label>
+                <input id="fecha" type="date" />
+              </div>
+              <div>
+                <label for="hora">Hora</label>
+                <input id="hora" type="time" />
+              </div>
+            </div>
+          </div>
+
+          <div id="bloqueFechasProyecto" class="hidden">
+            <div class="row-2">
+              <div>
+                <label for="fechaInicio">Fecha inicio</label>
+                <input id="fechaInicio" type="date" />
+              </div>
+              <div>
+                <label for="fechaFinPrevista">Fecha prevista finalizar</label>
+                <input id="fechaFinPrevista" type="date" />
+              </div>
+            </div>
+          </div>
+
+          <div class="row-2">
+            <div>
+              <label for="prioridad">Prioridad</label>
+              <select id="prioridad">
+                <option value="baja">Baja</option>
+                <option value="media" selected>Media</option>
+                <option value="alta">Alta</option>
+                <option value="urgente">Urgente</option>
+              </select>
+            </div>
+            <div>
+              <label for="estado">Estado</label>
+              <select id="estado">
+                <option value="pendiente">Pendiente</option>
+                <option value="en_curso">En curso</option>
+                <option value="hecha">Hecha</option>
+                <option value="descartada">Descartada</option>
+              </select>
+            </div>
+          </div>
+
+          <div id="camposDinamicos"></div>
+
+          <div class="actions">
+            <button type="submit" class="btn-primary" id="saveBtn">Guardar idea</button>
+            <button type="button" class="btn-secondary" id="cancelEditBtn">Cancelar edición</button>
+            <button type="button" class="btn-success" id="printCurrentPdfBtn">Imprimir idea PDF</button>
+            <button type="button" class="btn-success" id="printCurrentWordBtn">Imprimir idea Word</button>
+          </div>
+        </form>
+
+        <div class="split-line">
+          <div class="section-mini">
+            <h4>Para hoy</h4>
+            <div id="todayList" class="small">No hay llamadas ni reuniones/visitas pendientes para hoy.</div>
+          </div>
+
+          <div class="section-mini">
+            <h4>Para mañana</h4>
+            <div id="tomorrowList" class="small">No hay nada previsto para mañana.</div>
+          </div>
+
+          <div class="section-mini">
+            <h4>Datos</h4>
+            <div class="actions">
+              <button type="button" class="btn-primary" id="linkJsonFolderBtn">Carpeta JSON no disponible en iPhone</button>
+              <button type="button" class="btn-success" id="saveJsonNowBtn">Exportar JSON ahora</button>
+              <button type="button" class="btn-success" id="exportBtn">Exportar JSON</button>
+              <button type="button" class="btn-secondary" id="importBtn">Importar JSON</button>
+              <button type="button" class="btn-danger" id="clearAllBtn">Vaciar todo</button>
+              <input type="file" id="importFile" accept=".json" class="hidden" />
+            </div>
+            <div class="status-box">
+              <strong>Autoguardado JSON</strong>
+              <div id="jsonFolderStatus" class="small">Carpeta no seleccionada. Pulsa “Carpeta JSON no disponible en iPhone”.</div>
+              <div id="jsonSaveStatus" class="small">Los datos siguen guardándose también en este navegador.</div>
+            </div>
+            <div class="mobile-note">Funciones adaptadas para iPhone: sin carpeta fija, con almacenamiento local, exportación JSON, impresión desde compartir y archivo calendario .ics.</div>
+            <div class="small" style="margin-top:8px;">
+              En iPhone no se puede vincular una carpeta fija como en ordenador. Esta versión guarda los datos en el propio navegador y te permite exportar/importar JSON cuando quieras.
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>Listado de ideas</h2>
+
+        <div class="stats">
+          <div class="stat">
+            <div class="label">Total</div>
+            <div class="value" id="statTotal">0</div>
+          </div>
+          <div class="stat">
+            <div class="label">Pendientes</div>
+            <div class="value" id="statPendientes">0</div>
+          </div>
+          <div class="stat">
+            <div class="label">En curso</div>
+            <div class="value" id="statEnCurso">0</div>
+          </div>
+          <div class="stat">
+            <div class="label">Hechas</div>
+            <div class="value" id="statHechas">0</div>
+          </div>
+          <div class="stat">
+            <div class="label">Urgentes</div>
+            <div class="value" id="statUrgentes">0</div>
+          </div>
+        </div>
+
+        <div class="toolbar">
+          <input type="text" id="search" placeholder="Buscar por texto..." />
+          <select id="filterTipo">
+            <option value="">Todos los tipos</option>
+            <option value="llamada">LLAMADA</option>
+            <option value="mejora">MEJORA</option>
+            <option value="inversion">INVERSION</option>
+            <option value="mantenimiento">MANTENIMIENTO</option>
+            <option value="administrativa">ADMINISTRATIVA</option>
+            <option value="recursos_humanos">RECURSOS HUMANOS</option>
+            <option value="reunion_visita">REUNION/VISITA</option>
+            <option value="medio_ambiente">MEDIO AMBIENTE</option>
+            <option value="prevencion_riesgos">PREVENCION DE RIESGOS</option>
+          </select>
+          <select id="filterEstado">
+            <option value="">Todos los estados</option>
+            <option value="pendiente">Pendiente</option>
+            <option value="en_curso">En curso</option>
+            <option value="hecha">Hecha</option>
+            <option value="descartada">Descartada</option>
+          </select>
+          <select id="sortBy">
+            <option value="titulo_asc" selected>Tipos + título A-Z</option>
+            <option value="titulo_desc">Tipos + título Z-A</option>
+            <option value="fecha_asc">Tipos + fecha ↑</option>
+            <option value="fecha_desc">Tipos + fecha ↓</option>
+            <option value="creado_desc">Tipos + más recientes</option>
+            <option value="prioridad_desc">Tipos + mayor prioridad</option>
+          </select>
+        </div>
+
+        <div class="selection-toolbar">
+          <button type="button" class="btn-secondary" id="selectVisibleBtn">Seleccionar visibles</button>
+          <button type="button" class="btn-secondary" id="clearSelectionBtn">Quitar selección</button>
+          <button type="button" class="btn-primary" id="printPdfBtn">Imprimir PDF</button>
+          <button type="button" class="btn-success" id="printWordBtn">Imprimir Word</button>
+          <button type="button" class="btn-success" id="exportExcelBtn">Imprimir Excel</button>
+          <div class="selection-push">
+            <div class="selection-count" id="visibleCount">Ideas en pantalla: 0</div>
+            <div class="selection-count" id="selectionCount">Seleccionadas: 0</div>
+          </div>
+        </div>
+
+        <div id="ideaList" class="idea-list"></div>
+      </section>
+    </div>
+  </div>
+
+  <script>
+    const STORAGE_KEY = "gestor_ideas_html_v11";
+    const AUTO_JSON_FILENAME = "ideas.json";
+    const LINKED_FS_DB = "gestor_ideas_fs_db";
+    const LINKED_FS_STORE = "handles";
+    const LINKED_FS_KEY = "json_directory";
+
+    const PROJECT_TYPES = [
+      "inversion",
+      "mejora",
+      "mantenimiento",
+      "administrativa",
+      "recursos_humanos",
+      "medio_ambiente",
+      "prevencion_riesgos"
+    ];
+
+    const TYPE_ORDER = {
+      llamada: 1,
+      reunion_visita: 2,
+      inversion: 3,
+      mejora: 4,
+      mantenimiento: 5,
+      administrativa: 6,
+      recursos_humanos: 7,
+      medio_ambiente: 8,
+      prevencion_riesgos: 9
+    };
+
+    const selectedIdeaIds = new Set();
+
+    const form = document.getElementById("ideaForm");
+    const ideaId = document.getElementById("ideaId");
+    const tipo = document.getElementById("tipo");
+    const titulo = document.getElementById("titulo");
+    const descripcion = document.getElementById("descripcion");
+    const fecha = document.getElementById("fecha");
+    const hora = document.getElementById("hora");
+    const fechaInicio = document.getElementById("fechaInicio");
+    const fechaFinPrevista = document.getElementById("fechaFinPrevista");
+    const prioridad = document.getElementById("prioridad");
+    const estado = document.getElementById("estado");
+    const camposDinamicos = document.getElementById("camposDinamicos");
+    const bloqueFechaGeneral = document.getElementById("bloqueFechaGeneral");
+    const bloqueFechasProyecto = document.getElementById("bloqueFechasProyecto");
+
+    const search = document.getElementById("search");
+    const filterTipo = document.getElementById("filterTipo");
+    const filterEstado = document.getElementById("filterEstado");
+    const sortBy = document.getElementById("sortBy");
+
+    const ideaList = document.getElementById("ideaList");
+    const todayList = document.getElementById("todayList");
+    const tomorrowList = document.getElementById("tomorrowList");
+    const qsPendientes = document.getElementById("qsPendientes");
+    const qsUrgentes = document.getElementById("qsUrgentes");
+    const qsHoy = document.getElementById("qsHoy");
+    const qsManana = document.getElementById("qsManana");
+    const offlineChip = document.getElementById("offlineChip");
+    const formTitle = document.getElementById("formTitle");
+    const saveBtn = document.getElementById("saveBtn");
+    const cancelEditBtn = document.getElementById("cancelEditBtn");
+
+    const statTotal = document.getElementById("statTotal");
+    const statPendientes = document.getElementById("statPendientes");
+    const statEnCurso = document.getElementById("statEnCurso");
+    const statHechas = document.getElementById("statHechas");
+    const statUrgentes = document.getElementById("statUrgentes");
+
+    const exportBtn = document.getElementById("exportBtn");
+    const importBtn = document.getElementById("importBtn");
+    const clearAllBtn = document.getElementById("clearAllBtn");
+    const importFile = document.getElementById("importFile");
+    const linkJsonFolderBtn = document.getElementById("linkJsonFolderBtn");
+    const saveJsonNowBtn = document.getElementById("saveJsonNowBtn");
+    const jsonFolderStatus = document.getElementById("jsonFolderStatus");
+    const jsonSaveStatus = document.getElementById("jsonSaveStatus");
+
+    const selectVisibleBtn = document.getElementById("selectVisibleBtn");
+    const clearSelectionBtn = document.getElementById("clearSelectionBtn");
+    const printPdfBtn = document.getElementById("printPdfBtn");
+    const printWordBtn = document.getElementById("printWordBtn");
+    const exportExcelBtn = document.getElementById("exportExcelBtn");
+    const printCurrentPdfBtn = document.getElementById("printCurrentPdfBtn");
+    const printCurrentWordBtn = document.getElementById("printCurrentWordBtn");
+    const selectionCount = document.getElementById("selectionCount");
+    const visibleCount = document.getElementById("visibleCount");
+
+    let linkedDirectoryHandle = null;
+    let autosaveTimer = null;
+    let autosaveQueuedIdeas = null;
+    let autosaveRunning = false;
+
+    function supportsLinkedJsonAutosave() {
+      const isiPhoneLike = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+      if (isiPhoneLike) return false;
+      return !!(window.showDirectoryPicker && window.indexedDB);
+    }
+
+    function setJsonFolderStatus(message, level = "") {
+      jsonFolderStatus.textContent = message;
+      jsonFolderStatus.className = `small ${level}`.trim();
+    }
+
+    function setJsonSaveStatus(message, level = "") {
+      jsonSaveStatus.textContent = message;
+      jsonSaveStatus.className = `small ${level}`.trim();
+    }
+
+    function openHandleDatabase() {
+      return new Promise((resolve, reject) => {
+        const request = indexedDB.open(LINKED_FS_DB, 1);
+
+        request.onupgradeneeded = () => {
+          request.result.createObjectStore(LINKED_FS_STORE);
+        };
+
+        request.onsuccess = () => resolve(request.result);
+        request.onerror = () => reject(request.error);
+      });
+    }
+
+    async function saveDirectoryHandleToDB(handle) {
+      const db = await openHandleDatabase();
+      return new Promise((resolve, reject) => {
+        const tx = db.transaction(LINKED_FS_STORE, "readwrite");
+        tx.objectStore(LINKED_FS_STORE).put(handle, LINKED_FS_KEY);
+        tx.oncomplete = () => resolve();
+        tx.onerror = () => reject(tx.error);
+      });
+    }
+
+    async function loadDirectoryHandleFromDB() {
+      const db = await openHandleDatabase();
+      return new Promise((resolve, reject) => {
+        const tx = db.transaction(LINKED_FS_STORE, "readonly");
+        const request = tx.objectStore(LINKED_FS_STORE).get(LINKED_FS_KEY);
+        request.onsuccess = () => resolve(request.result || null);
+        request.onerror = () => reject(request.error);
+      });
+    }
+
+    async function getDirectoryPermissionState(handle) {
+      if (!handle) return "prompt";
+      try {
+        return await handle.queryPermission({ mode: "readwrite" });
+      } catch {
+        return "prompt";
+      }
+    }
+
+    async function requestDirectoryPermission(handle) {
+      if (!handle) return false;
+      try {
+        const result = await handle.requestPermission({ mode: "readwrite" });
+        return result === "granted";
+      } catch {
+        return false;
+      }
+    }
+
+    async function getLinkedJsonFileHandle(createIfMissing = true) {
+      if (!linkedDirectoryHandle) return null;
+      return await linkedDirectoryHandle.getFileHandle(AUTO_JSON_FILENAME, { create: createIfMissing });
+    }
+
+    async function writeIdeasToLinkedJson(ideas) {
+      if (!linkedDirectoryHandle) {
+        setJsonSaveStatus("No hay carpeta seleccionada para el autoguardado JSON.", "status-warn");
+        return false;
+      }
+
+      const permission = await getDirectoryPermissionState(linkedDirectoryHandle);
+      if (permission !== "granted") {
+        setJsonSaveStatus("La carpeta está vinculada, pero el navegador pide permiso para volver a guardar.", "status-warn");
+        return false;
+      }
+
+      const fileHandle = await getLinkedJsonFileHandle(true);
+      const writable = await fileHandle.createWritable();
+      await writable.write(JSON.stringify(normalizeIdeasArray(ideas), null, 2));
+      await writable.close();
+
+      setJsonFolderStatus(`Carpeta vinculada: ${linkedDirectoryHandle.name} · archivo ${AUTO_JSON_FILENAME}`, "status-ok");
+      setJsonSaveStatus(`Guardado automático correcto: ${AUTO_JSON_FILENAME}`, "status-ok");
+      return true;
+    }
+
+    async function flushLinkedJsonAutosave() {
+      if (autosaveRunning || !autosaveQueuedIdeas) return;
+
+      autosaveRunning = true;
+      const ideasToSave = autosaveQueuedIdeas;
+      autosaveQueuedIdeas = null;
+
+      try {
+        await writeIdeasToLinkedJson(ideasToSave);
+      } catch (error) {
+        console.error(error);
+        setJsonSaveStatus("No se pudo guardar automáticamente el JSON en la carpeta elegida.", "status-error");
+      } finally {
+        autosaveRunning = false;
+        if (autosaveQueuedIdeas) {
+          flushLinkedJsonAutosave();
+        }
+      }
+    }
+
+    function scheduleLinkedJsonAutosave(ideas) {
+      if (!linkedDirectoryHandle) {
+        setJsonSaveStatus("Los datos se guardan en este navegador. Si quieres, vincula una carpeta para crear ideas.json automáticamente.", "status-warn");
+        return;
+      }
+
+      autosaveQueuedIdeas = normalizeIdeasArray(ideas);
+      setJsonSaveStatus(`Cambios pendientes de guardar en ${AUTO_JSON_FILENAME}...`, "status-warn");
+
+      clearTimeout(autosaveTimer);
+      autosaveTimer = setTimeout(() => {
+        flushLinkedJsonAutosave();
+      }, 500);
+    }
+
+    async function forceSaveLinkedJsonNow() {
+      const ideas = normalizeIdeasArray(loadIdeas());
+
+      if (!supportsLinkedJsonAutosave()) {
+        alert("Este navegador no permite vincular una carpeta fija para guardar el JSON automáticamente.");
+        return;
+      }
+
+      if (!linkedDirectoryHandle) {
+        alert("Primero selecciona una carpeta JSON.");
+        return;
+      }
+
+      const granted = await requestDirectoryPermission(linkedDirectoryHandle);
+      if (!granted) {
+        setJsonSaveStatus("No se concedió permiso de escritura para la carpeta vinculada.", "status-error");
+        alert("No se ha podido guardar porque el navegador no ha concedido permiso para escribir en la carpeta.");
+        return;
+      }
+
+      autosaveQueuedIdeas = ideas;
+      await flushLinkedJsonAutosave();
+    }
+
+    async function chooseLinkedJsonFolder() {
+      if (!supportsLinkedJsonAutosave()) {
+        alert("Este navegador no permite fijar una carpeta de autoguardado JSON. Puedes seguir usando Exportar JSON manualmente.");
+        return;
+      }
+
+      try {
+        const directoryHandle = await window.showDirectoryPicker({ mode: "readwrite" });
+        const granted = await requestDirectoryPermission(directoryHandle);
+
+        if (!granted) {
+          setJsonSaveStatus("No se concedió permiso para la carpeta seleccionada.", "status-error");
+          return;
+        }
+
+        linkedDirectoryHandle = directoryHandle;
+        await saveDirectoryHandleToDB(directoryHandle);
+
+        setJsonFolderStatus(`Carpeta vinculada: ${linkedDirectoryHandle.name} · archivo ${AUTO_JSON_FILENAME}`, "status-ok");
+        setJsonSaveStatus(`Preparado para guardar automáticamente en ${AUTO_JSON_FILENAME}.`, "status-ok");
+
+        const fileHandle = await getLinkedJsonFileHandle(true);
+        const file = await fileHandle.getFile();
+        const content = await file.text();
+
+        if (content.trim()) {
+          try {
+            const parsed = JSON.parse(content);
+            const linkedIdeas = normalizeIdeasArray(parsed);
+
+            if (Array.isArray(parsed) && linkedIdeas.length && confirm(`Se ha encontrado ${AUTO_JSON_FILENAME} en la carpeta seleccionada. ¿Quieres cargar ese archivo ahora en el programa?`)) {
+              saveIdeas(linkedIdeas);
+              selectedIdeaIds.clear();
+              resetForm();
+              renderIdeas();
+              setJsonSaveStatus(`Archivo ${AUTO_JSON_FILENAME} cargado y vinculado correctamente.`, "status-ok");
+              return;
+            }
+          } catch {
+            // Si el archivo no es válido, se sobrescribe con los datos actuales.
+          }
+        }
+
+        scheduleLinkedJsonAutosave(loadIdeas());
+      } catch (error) {
+        if (error && error.name === "AbortError") return;
+        console.error(error);
+        setJsonSaveStatus("No se pudo vincular la carpeta JSON.", "status-error");
+      }
+    }
+
+    async function initLinkedJsonFolder() {
+      if (!supportsLinkedJsonAutosave()) {
+        setJsonFolderStatus("Este navegador no permite fijar una carpeta de guardado automático JSON.", "status-warn");
+        setJsonSaveStatus("Puedes seguir usando Exportar JSON manualmente y los datos siguen guardándose en este navegador.", "status-warn");
+        return;
+      }
+
+      try {
+        linkedDirectoryHandle = await loadDirectoryHandleFromDB();
+
+        if (!linkedDirectoryHandle) {
+          setJsonFolderStatus("Carpeta no seleccionada. Pulsa “Carpeta JSON no disponible en iPhone”.", "status-warn");
+          setJsonSaveStatus("Los datos se guardan en este navegador. Si quieres, vincula una carpeta para crear ideas.json automáticamente.", "status-warn");
+          return;
+        }
+
+        const permission = await getDirectoryPermissionState(linkedDirectoryHandle);
+        setJsonFolderStatus(`Carpeta recordada: ${linkedDirectoryHandle.name} · archivo ${AUTO_JSON_FILENAME}`, permission === "granted" ? "status-ok" : "status-warn");
+
+        if (permission === "granted") {
+          setJsonSaveStatus(`Autoguardado activo en ${AUTO_JSON_FILENAME}.`, "status-ok");
+        } else {
+          setJsonSaveStatus("La carpeta está recordada, pero quizá tengas que pulsar “Exportar JSON ahora” o volver a elegir la carpeta para dar permiso.", "status-warn");
+        }
+      } catch (error) {
+        console.error(error);
+        setJsonFolderStatus("No se pudo recuperar la carpeta JSON guardada anteriormente.", "status-error");
+        setJsonSaveStatus("Puedes volver a seleccionarla cuando quieras.", "status-warn");
+      }
+    }
+
+    function loadIdeas() {
+      try {
+        return JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+      } catch {
+        return [];
+      }
+    }
+
+    function saveIdeas(ideas) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(ideas));
+      scheduleLinkedJsonAutosave(ideas);
+    }
+
+    function generateId() {
+      return Date.now() + Math.floor(Math.random() * 10000);
+    }
+
+    function toLocalDateInputValue(dateObj) {
+      const year = dateObj.getFullYear();
+      const month = String(dateObj.getMonth() + 1).padStart(2, "0");
+      const day = String(dateObj.getDate()).padStart(2, "0");
+      return `${year}-${month}-${day}`;
+    }
+
+    function todayStr() {
+      return toLocalDateInputValue(new Date());
+    }
+
+    function tomorrowStr() {
+      const d = new Date();
+      d.setDate(d.getDate() + 1);
+      return toLocalDateInputValue(d);
+    }
+
+    function escapeHtml(text) {
+      return String(text || "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+    }
+
+    function normalizeText(value) {
+      return String(value || "")
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "");
+    }
+
+    function isProjectType(tipoValor) {
+      return PROJECT_TYPES.includes(tipoValor);
+    }
+
+    function canSendToOutlook(tipoValor) {
+      return tipoValor === "llamada" || tipoValor === "reunion_visita";
+    }
+
+    function isAgendaType(tipoValor) {
+      return tipoValor === "llamada" || tipoValor === "reunion_visita";
+    }
+
+    function typeWeight(tipoValor) {
+      return TYPE_ORDER[tipoValor] || 999;
+    }
+
+    function getMainDateForSorting(idea) {
+      return isProjectType(idea.tipo)
+        ? (idea.fechaInicio || "")
+        : (idea.fecha || "");
+    }
+
+    function formatTipo(tipoValor) {
+      return {
+        llamada: "LLAMADA",
+        mejora: "MEJORA",
+        inversion: "INVERSION",
+        mantenimiento: "MANTENIMIENTO",
+        administrativa: "ADMINISTRATIVA",
+        recursos_humanos: "RECURSOS HUMANOS",
+        reunion_visita: "REUNION/VISITA",
+        medio_ambiente: "MEDIO AMBIENTE",
+        prevencion_riesgos: "PREVENCION DE RIESGOS"
+      }[tipoValor] || tipoValor;
+    }
+
+    function formatEstado(valor) {
+      return {
+        pendiente: "Pendiente",
+        en_curso: "En curso",
+        hecha: "Hecha",
+        descartada: "Descartada"
+      }[valor] || valor;
+    }
+
+    function priorityWeight(valor) {
+      return {
+        baja: 1,
+        media: 2,
+        alta: 3,
+        urgente: 4
+      }[valor] || 0;
+    }
+
+    function normalizeIdea(item) {
+      const extra = item.extra || {};
+
+      if (!extra.planAcciones && Array.isArray(extra.tareas)) {
+        extra.planAcciones = extra.tareas;
+      }
+
+      if (!Array.isArray(extra.planAcciones)) {
+        extra.planAcciones = [];
+      }
+
+      return {
+        ...item,
+        extra
+      };
+    }
+
+    function normalizeIdeasArray(data) {
+      return (Array.isArray(data) ? data : []).map(normalizeIdea);
+    }
+
+    function getProjectTasksData() {
+      const taskNodes = document.querySelectorAll(".project-task");
+      const tasks = [];
+      taskNodes.forEach(node => {
+        const descripcion = node.querySelector(".task-descripcion")?.value.trim() || "";
+        const proveedor = node.querySelector(".task-proveedor")?.value.trim() || "";
+        const estado = node.querySelector(".task-estado")?.value || "pendiente";
+        tasks.push({ descripcion, proveedor, estado });
+      });
+      return tasks;
+    }
+
+    function createTaskHTML(task = {}, index = 0) {
+      return `
+        <div class="task-card project-task">
+          <div class="task-header">
+            <h4>Acción ${index + 1}</h4>
+            <button type="button" class="task-remove-btn" onclick="removeTask(this)">Quitar acción</button>
+          </div>
+
+          <label>Descripción</label>
+          <textarea class="task-descripcion" placeholder="Describe la acción">${escapeHtml(task.descripcion || "")}</textarea>
+
+          <div class="row-2">
+            <div>
+              <label>Proveedor</label>
+              <input class="task-proveedor" type="text" placeholder="Proveedor" value="${escapeHtml(task.proveedor || "")}" />
+            </div>
+            <div>
+              <label>Estado</label>
+              <select class="task-estado">
+                <option value="pendiente" ${task.estado === "pendiente" ? "selected" : ""}>Pendiente</option>
+                <option value="en_curso" ${task.estado === "en_curso" ? "selected" : ""}>En curso</option>
+                <option value="hecha" ${task.estado === "hecha" ? "selected" : ""}>Hecha</option>
+                <option value="descartada" ${task.estado === "descartada" ? "selected" : ""}>Descartada</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function refreshTaskTitles() {
+      document.querySelectorAll(".project-task").forEach((task, index) => {
+        const title = task.querySelector(".task-header h4");
+        if (title) title.textContent = `Acción ${index + 1}`;
+      });
+    }
+
+    function addProjectTask(task = {}) {
+      const container = document.getElementById("projectActionsContainer");
+      if (!container) return;
+      const currentCount = container.querySelectorAll(".project-task").length;
+      container.insertAdjacentHTML("beforeend", createTaskHTML(task, currentCount));
+      refreshTaskTitles();
+    }
+
+    function removeTask(button) {
+      const task = button.closest(".project-task");
+      if (task) task.remove();
+      refreshTaskTitles();
+    }
+
+    function getDynamicValues() {
+      const ids = [
+        "persona", "telefono", "empresa", "resultado",
+        "tipoProyecto",
+        "lugar", "personas", "objetivo", "seguimiento"
+      ];
+
+      const data = {};
+      ids.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) data[id] = el.value.trim();
+      });
+
+      if (isProjectType(tipo.value)) {
+        data.planAcciones = getProjectTasksData();
+      }
+
+      return data;
+    }
+
+    function renderProjectFields(current) {
+      const accionesGuardadas = Array.isArray(current.planAcciones) && current.planAcciones.length
+        ? current.planAcciones
+        : (Array.isArray(current.tareas) && current.tareas.length
+            ? current.tareas
+            : [{ descripcion: "", proveedor: "", estado: "pendiente" }]);
+
+      camposDinamicos.innerHTML = `
+        <label for="tipoProyecto">Tipo / área</label>
+        <select id="tipoProyecto">
+          <option value="">Selecciona una opción</option>
+          <option value="SCR" ${current.tipoProyecto === "SCR" ? "selected" : ""}>SCR</option>
+          <option value="PREVENCION DE RIESGOS" ${current.tipoProyecto === "PREVENCION DE RIESGOS" ? "selected" : ""}>PREVENCION DE RIESGOS</option>
+          <option value="MEDIO AMBIENTE" ${current.tipoProyecto === "MEDIO AMBIENTE" ? "selected" : ""}>MEDIO AMBIENTE</option>
+          <option value="ADMINISTRACION" ${current.tipoProyecto === "ADMINISTRACION" ? "selected" : ""}>ADMINISTRACION</option>
+          <option value="PLANTA GENERAL" ${current.tipoProyecto === "PLANTA GENERAL" ? "selected" : ""}>PLANTA GENERAL</option>
+          <option value="RESTAURACION" ${current.tipoProyecto === "RESTAURACION" ? "selected" : ""}>RESTAURACION</option>
+          <option value="CANTERA AMPARO" ${current.tipoProyecto === "CANTERA AMPARO" ? "selected" : ""}>CANTERA AMPARO</option>
+          <option value="SERVICIOS AUXILIARES" ${current.tipoProyecto === "SERVICIOS AUXILIARES" ? "selected" : ""}>SERVICIOS AUXILIARES</option>
+          <option value="OTRO" ${current.tipoProyecto === "OTRO" ? "selected" : ""}>OTRO</option>
+        </select>
+
+        <div class="section-mini" style="margin-top:16px;">
+          <h4>Plan de acciones</h4>
+          <div id="projectActionsContainer"></div>
+          <div class="actions">
+            <button type="button" class="btn-primary" id="addTaskBtn">Añadir acción</button>
+          </div>
+        </div>
+      `;
+
+      const container = document.getElementById("projectActionsContainer");
+      accionesGuardadas.forEach((task, index) => {
+        container.insertAdjacentHTML("beforeend", createTaskHTML(task, index));
+      });
+
+      const addTaskBtn = document.getElementById("addTaskBtn");
+      if (addTaskBtn) {
+        addTaskBtn.addEventListener("click", () => addProjectTask());
+      }
+    }
+
+    function renderDynamicFields(existingData = null) {
+      const current = existingData || getDynamicValues();
+
+      if (tipo.value === "llamada") {
+        camposDinamicos.innerHTML = `
+          <div class="row-2">
+            <div>
+              <label for="persona">Persona</label>
+              <input id="persona" type="text" placeholder="A quién llamar" value="${escapeHtml(current.persona || "")}" />
+            </div>
+            <div>
+              <label for="telefono">Teléfono</label>
+              <input id="telefono" type="text" placeholder="Número de teléfono" value="${escapeHtml(current.telefono || "")}" />
+            </div>
+          </div>
+          <label for="empresa">Empresa</label>
+          <input id="empresa" type="text" placeholder="Empresa o contacto" value="${escapeHtml(current.empresa || "")}" />
+          <label for="resultado">Resultado esperado</label>
+          <input id="resultado" type="text" placeholder="Qué quieres conseguir con la llamada" value="${escapeHtml(current.resultado || "")}" />
+        `;
+      } else if (tipo.value === "reunion_visita") {
+        camposDinamicos.innerHTML = `
+          <div class="row-2">
+            <div>
+              <label for="lugar">Lugar</label>
+              <input id="lugar" type="text" placeholder="Lugar de la reunión o visita" value="${escapeHtml(current.lugar || "")}" />
+            </div>
+            <div>
+              <label for="personas">Personas</label>
+              <input id="personas" type="text" placeholder="Asistentes o contactos" value="${escapeHtml(current.personas || "")}" />
+            </div>
+          </div>
+          <label for="objetivo">Objetivo</label>
+          <input id="objetivo" type="text" placeholder="Objetivo de la reunión o visita" value="${escapeHtml(current.objetivo || "")}" />
+          <label for="seguimiento">Seguimiento posterior</label>
+          <input id="seguimiento" type="text" placeholder="Notas o acción posterior" value="${escapeHtml(current.seguimiento || "")}" />
+        `;
+      } else if (isProjectType(tipo.value)) {
+        renderProjectFields(current);
+      } else {
+        camposDinamicos.innerHTML = "";
+      }
+
+      updateTypeSpecificUI();
+    }
+
+    function updateTypeSpecificUI() {
+      const projectType = isProjectType(tipo.value);
+      bloqueFechaGeneral.classList.toggle("hidden", projectType);
+      bloqueFechasProyecto.classList.toggle("hidden", !projectType);
+
+      if (projectType) {
+        hora.value = "";
+      } else {
+        fechaInicio.value = "";
+        fechaFinPrevista.value = "";
+      }
+    }
+
+    function resetForm() {
+      form.reset();
+      ideaId.value = "";
+      tipo.value = "llamada";
+      prioridad.value = "media";
+      estado.value = "pendiente";
+      hora.value = "";
+      fechaInicio.value = "";
+      fechaFinPrevista.value = "";
+      formTitle.textContent = "Nueva idea";
+      saveBtn.textContent = "Guardar idea";
+      renderDynamicFields({});
+    }
+
+    function getExistingCreated(id) {
+      const ideas = normalizeIdeasArray(loadIdeas());
+      const found = ideas.find(i => i.id === id);
+      return found ? found.creado : new Date().toLocaleString("es-ES");
+    }
+
+    function createIdeaObject() {
+      const projectType = isProjectType(tipo.value);
+
+      return normalizeIdea({
+        id: ideaId.value ? Number(ideaId.value) : generateId(),
+        tipo: tipo.value,
+        titulo: titulo.value.trim(),
+        descripcion: descripcion.value.trim(),
+        fecha: projectType ? "" : (fecha.value || ""),
+        hora: projectType ? "" : (hora.value || ""),
+        fechaInicio: projectType ? (fechaInicio.value || "") : "",
+        fechaFinPrevista: projectType ? (fechaFinPrevista.value || "") : "",
+        prioridad: prioridad.value,
+        estado: estado.value,
+        creado: ideaId.value ? getExistingCreated(Number(ideaId.value)) : new Date().toLocaleString("es-ES"),
+        extra: getDynamicValues()
+      });
+    }
+
+    function buildSearchableText(idea) {
+      return normalizeText([
+        idea.titulo,
+        idea.descripcion,
+        idea.tipo,
+        idea.fecha,
+        idea.hora,
+        idea.fechaInicio,
+        idea.fechaFinPrevista,
+        idea.prioridad,
+        idea.estado,
+        JSON.stringify(idea.extra || {})
+      ].join(" "));
+    }
+
+    function compareByType(a, b) {
+      const diff = typeWeight(a.tipo) - typeWeight(b.tipo);
+      if (diff !== 0) return diff;
+      return formatTipo(a.tipo).localeCompare(formatTipo(b.tipo), "es");
+    }
+
+    function compareBySecondary(a, b, mode) {
+      if (mode === "fecha_asc") {
+        const aDate = getMainDateForSorting(a) || "9999-12-31";
+        const bDate = getMainDateForSorting(b) || "9999-12-31";
+        const dateDiff = aDate.localeCompare(bDate);
+        if (dateDiff !== 0) return dateDiff;
+        const aHour = a.hora || "23:59";
+        const bHour = b.hora || "23:59";
+        return aHour.localeCompare(bHour);
+      }
+
+      if (mode === "fecha_desc") {
+        const aDate = getMainDateForSorting(a) || "";
+        const bDate = getMainDateForSorting(b) || "";
+        const dateDiff = bDate.localeCompare(aDate);
+        if (dateDiff !== 0) return dateDiff;
+        const aHour = a.hora || "";
+        const bHour = b.hora || "";
+        return bHour.localeCompare(aHour);
+      }
+
+      if (mode === "creado_desc") {
+        return (b.creado || "").localeCompare(a.creado || "");
+      }
+
+      if (mode === "prioridad_desc") {
+        const p = priorityWeight(b.prioridad) - priorityWeight(a.prioridad);
+        if (p !== 0) return p;
+        return (a.titulo || "").localeCompare(b.titulo || "", "es");
+      }
+
+      if (mode === "titulo_asc") {
+        return (a.titulo || "").localeCompare(b.titulo || "", "es");
+      }
+
+      if (mode === "titulo_desc") {
+        return (b.titulo || "").localeCompare(a.titulo || "", "es");
+      }
+
+      return 0;
+    }
+
+    function getIdeasFiltered() {
+      let ideas = normalizeIdeasArray(loadIdeas());
+      const q = normalizeText(search.value.trim());
+      const ft = filterTipo.value;
+      const fe = filterEstado.value;
+      const sb = sortBy.value;
+
+      if (q) ideas = ideas.filter(idea => buildSearchableText(idea).includes(q));
+      if (ft) ideas = ideas.filter(idea => idea.tipo === ft);
+      if (fe) ideas = ideas.filter(idea => idea.estado === fe);
+
+      ideas.sort((a, b) => {
+        const typeDiff = compareByType(a, b);
+        if (typeDiff !== 0) return typeDiff;
+
+        const secondaryDiff = compareBySecondary(a, b, sb);
+        if (secondaryDiff !== 0) return secondaryDiff;
+
+        return (a.titulo || "").localeCompare(b.titulo || "", "es");
+      });
+
+      return ideas;
+    }
+
+    function updateSelectionCount() {
+      selectionCount.textContent = `Seleccionadas: ${selectedIdeaIds.size}`;
+    }
+
+    function updateVisibleCount(total) {
+      visibleCount.textContent = `Ideas en pantalla: ${total}`;
+    }
+
+    function autoSelectVisibleIdeas(ideasVisibles) {
+      selectedIdeaIds.clear();
+      ideasVisibles.forEach(idea => selectedIdeaIds.add(idea.id));
+    }
+
+
+    function renderQuickSummary() {
+      const ideas = normalizeIdeasArray(loadIdeas());
+      const pendientes = ideas.filter(i => i.estado === "pendiente").length;
+      const urgentes = ideas.filter(i => i.prioridad === "urgente" && i.estado !== "hecha" && i.estado !== "descartada").length;
+      const hoy = ideas.filter(i => isAgendaType(i.tipo) && i.fecha === todayStr() && i.estado !== "hecha" && i.estado !== "descartada").length;
+      const manana = ideas.filter(i => isAgendaType(i.tipo) && i.fecha === tomorrowStr() && i.estado !== "hecha" && i.estado !== "descartada").length;
+
+      qsPendientes.textContent = pendientes;
+      qsUrgentes.textContent = urgentes;
+      qsHoy.textContent = hoy;
+      qsManana.textContent = manana;
+
+      const badgeTotal = hoy + manana;
+      document.title = badgeTotal > 0 ? `Ideas (${badgeTotal})` : "Gestor de Ideas";
+    }
+
+    function updateConnectionState() {
+      const offline = typeof navigator !== "undefined" && navigator.onLine === false;
+      offlineChip.style.display = offline ? "inline-block" : "none";
+    }
+
+    function renderStats() {
+      const ideas = normalizeIdeasArray(loadIdeas());
+      statTotal.textContent = ideas.length;
+      statPendientes.textContent = ideas.filter(i => i.estado === "pendiente").length;
+      statEnCurso.textContent = ideas.filter(i => i.estado === "en_curso").length;
+      statHechas.textContent = ideas.filter(i => i.estado === "hecha").length;
+      statUrgentes.textContent = ideas.filter(i => i.prioridad === "urgente" && i.estado !== "hecha" && i.estado !== "descartada").length;
+    }
+
+    function renderToday() {
+      const today = todayStr();
+      const ideas = normalizeIdeasArray(loadIdeas())
+        .filter(i => isAgendaType(i.tipo))
+        .filter(i => i.fecha === today && i.estado !== "hecha" && i.estado !== "descartada")
+        .sort((a, b) => {
+          const typeDiff = compareByType(a, b);
+          if (typeDiff !== 0) return typeDiff;
+          const prio = priorityWeight(b.prioridad) - priorityWeight(a.prioridad);
+          if (prio !== 0) return prio;
+          return (a.hora || "23:59").localeCompare(b.hora || "23:59");
+        });
+
+      if (!ideas.length) {
+        todayList.innerHTML = "No hay llamadas ni reuniones/visitas pendientes para hoy.";
+        return;
+      }
+
+      todayList.innerHTML = ideas.map(i => {
+        const horaText = i.hora ? ` a las ${escapeHtml(i.hora)}` : "";
+        return `• ${escapeHtml(i.titulo)} (${formatTipo(i.tipo)}${horaText}, prioridad ${escapeHtml(i.prioridad)})`;
+      }).join("<br>");
+    }
+
+    function renderTomorrow() {
+      const tomorrow = tomorrowStr();
+      const ideas = normalizeIdeasArray(loadIdeas())
+        .filter(i => isAgendaType(i.tipo))
+        .filter(i => i.fecha === tomorrow && i.estado !== "hecha" && i.estado !== "descartada")
+        .sort((a, b) => {
+          const typeDiff = compareByType(a, b);
+          if (typeDiff !== 0) return typeDiff;
+          const prio = priorityWeight(b.prioridad) - priorityWeight(a.prioridad);
+          if (prio !== 0) return prio;
+          return (a.hora || "23:59").localeCompare(b.hora || "23:59");
+        });
+
+      if (!ideas.length) {
+        tomorrowList.innerHTML = "No hay llamadas ni reuniones/visitas pendientes para mañana.";
+        return;
+      }
+
+      tomorrowList.innerHTML = ideas.map(i => {
+        const horaText = i.hora ? ` a las ${escapeHtml(i.hora)}` : "";
+        return `• ${escapeHtml(i.titulo)} (${formatTipo(i.tipo)}${horaText}, prioridad ${escapeHtml(i.prioridad)})`;
+      }).join("<br>");
+    }
+
+    function renderProjectExtra(idea) {
+      const extra = idea.extra || {};
+      const acciones = Array.isArray(extra.planAcciones)
+        ? extra.planAcciones
+        : (Array.isArray(extra.tareas) ? extra.tareas : []);
+
+      return `
+        <div class="extra">
+          <div><strong>Tipo / área:</strong> ${escapeHtml(extra.tipoProyecto || "-")}</div>
+          <div><strong>Fecha inicio:</strong> ${escapeHtml(idea.fechaInicio || "-")}</div>
+          <div><strong>Fecha prevista finalizar:</strong> ${escapeHtml(idea.fechaFinPrevista || "-")}</div>
+          <div style="margin-top:10px;"><strong>Plan de acciones:</strong></div>
+          ${
+            acciones.length
+              ? acciones.map((t, index) => `
+                  <div style="margin-top:8px; padding:8px; border:1px solid #e5e7eb; border-radius:8px; background:white;">
+                    <div><strong>Acción ${index + 1}</strong></div>
+                    <div><strong>Descripción:</strong> ${escapeHtml(t.descripcion || "-")}</div>
+                    <div><strong>Proveedor:</strong> ${escapeHtml(t.proveedor || "-")}</div>
+                    <div><strong>Estado:</strong> ${escapeHtml(formatEstado(t.estado || "-"))}</div>
+                  </div>
+                `).join("")
+              : `<div style="margin-top:8px;">Sin acciones definidas.</div>`
+          }
+        </div>
+      `;
+    }
+
+    function renderGenericExtra(idea) {
+      const extra = idea.extra || {};
+      const extraEntries = Object.entries(extra).filter(([key, value]) => {
+        if (key === "planAcciones" || key === "tareas") return false;
+        return value && String(value).trim() !== "";
+      });
+
+      if (!extraEntries.length) return "";
+
+      return `
+        <div class="extra">
+          ${extraEntries.map(([k, v]) => `<div><strong>${escapeHtml(k)}:</strong> ${escapeHtml(v)}</div>`).join("")}
+        </div>
+      `;
+    }
+
+    function renderIdeas() {
+      const ideas = getIdeasFiltered();
+
+      autoSelectVisibleIdeas(ideas);
+      updateVisibleCount(ideas.length);
+
+      if (!ideas.length) {
+        ideaList.innerHTML = `<div class="empty">No hay ideas que coincidan con los filtros.</div>`;
+        renderStats();
+        renderToday();
+        renderTomorrow();
+        renderQuickSummary();
+        updateSelectionCount();
+        return;
+      }
+
+      ideaList.innerHTML = ideas.map(idea => {
+        const fechaTexto = isProjectType(idea.tipo)
+          ? `<strong>Fecha inicio:</strong> ${idea.fechaInicio || "-"} · <strong>Fecha prevista finalizar:</strong> ${idea.fechaFinPrevista || "-"}`
+          : `<strong>Fecha:</strong> ${idea.fecha || "-"} ${idea.hora ? `· <strong>Hora:</strong> ${escapeHtml(idea.hora)}` : ""}`;
+
+        const outlookButton = canSendToOutlook(idea.tipo)
+          ? `<button class="btn-primary" onclick="exportIdeaToOutlook(${idea.id})">Outlook</button>`
+          : "";
+
+        const extraContent = isProjectType(idea.tipo)
+          ? renderProjectExtra(idea)
+          : renderGenericExtra(idea);
+
+        const checked = selectedIdeaIds.has(idea.id) ? "checked" : "";
+
+        return `
+          <article class="idea">
+            <div class="idea-top">
+              <div class="idea-top-left">
+                <input type="checkbox" class="select-box" ${checked} onchange="toggleIdeaSelection(${idea.id}, this.checked)" />
+                <div>
+                  <h3 class="idea-title">${escapeHtml(idea.titulo)}</h3>
+                  <div class="badges">
+                    <span class="badge tipo-${idea.tipo}">${formatTipo(idea.tipo)}</span>
+                    <span class="badge prio-${idea.prioridad}">${escapeHtml(idea.prioridad)}</span>
+                    <span class="badge estado-${idea.estado}">${formatEstado(idea.estado)}</span>
+                  </div>
+                </div>
+              </div>
+              <div class="small">ID: ${idea.id}</div>
+            </div>
+
+            <div class="preserve-lines">${escapeHtml(idea.descripcion || "Sin descripción")}</div>
+
+            <div class="meta" style="margin-top:8px;">
+              ${fechaTexto}<br>
+              <strong>Creado:</strong> ${escapeHtml(idea.creado || "-")}
+            </div>
+
+            ${extraContent}
+
+            <div class="idea-actions">
+              <button class="btn-secondary" onclick="editIdea(${idea.id})">Editar</button>
+              ${outlookButton}
+              <button class="btn-success" onclick="markDone(${idea.id})">Marcar hecha</button>
+              <button class="btn-warning" onclick="duplicateIdea(${idea.id})">Duplicar</button>
+              <button class="btn-danger" onclick="deleteIdea(${idea.id})">Borrar</button>
+            </div>
+          </article>
+        `;
+      }).join("");
+
+      renderStats();
+      renderToday();
+      renderTomorrow();
+      renderQuickSummary();
+      updateSelectionCount();
+    }
+
+    function toggleIdeaSelection(id, checked) {
+      if (checked) selectedIdeaIds.add(id);
+      else selectedIdeaIds.delete(id);
+      updateSelectionCount();
+    }
+
+    function getSelectedIdeas() {
+      const ideasOrdenadasEnPantalla = getIdeasFiltered();
+      return ideasOrdenadasEnPantalla.filter(i => selectedIdeaIds.has(i.id));
+    }
+
+    function flattenPlanAcciones(idea) {
+      const acciones = Array.isArray(idea.extra?.planAcciones)
+        ? idea.extra.planAcciones
+        : (Array.isArray(idea.extra?.tareas) ? idea.extra.tareas : []);
+
+      if (!acciones.length) return "";
+
+      return acciones.map((a, index) =>
+        `Acción ${index + 1}: ${a.descripcion || ""} | Proveedor: ${a.proveedor || ""} | Estado: ${formatEstado(a.estado || "")}`
+      ).join(" || ");
+    }
+
+    function getIdeaById(id) {
+      const ideas = normalizeIdeasArray(loadIdeas());
+      return ideas.find(i => i.id === id) || null;
+    }
+
+    function getCurrentEditingIdea() {
+      if (!ideaId.value) return null;
+      return getIdeaById(Number(ideaId.value));
+    }
+
+    function getCurrentFormIdeaForPrint() {
+      if (!titulo.value.trim()) {
+        alert("Escribe al menos el título para poder imprimir.");
+        return null;
+      }
+
+      const currentIdea = createIdeaObject();
+      if (!ideaId.value) {
+        currentIdea.id = "BORRADOR";
+        currentIdea.creado = new Date().toLocaleString("es-ES");
+      }
+      return currentIdea;
+    }
+
+    function renderIdeaCardHTML(idea, forPrint = false) {
+      const t = tipoColors(idea.tipo);
+      const p = prioridadColors(idea.prioridad);
+      const e = estadoColors(idea.estado);
+      const extra = idea.extra || {};
+      const extraEntries = Object.entries(extra).filter(([k, v]) => k !== "planAcciones" && k !== "tareas" && v);
+      const acciones = Array.isArray(extra.planAcciones)
+        ? extra.planAcciones
+        : (Array.isArray(extra.tareas) ? extra.tareas : []);
+
+      return `
+        <div class="item">
+          <h2>${escapeHtml(idea.titulo)}</h2>
+
+          <div class="badges">
+            <span class="badge" style="background:${t.bg}; color:${t.color};">${formatTipo(idea.tipo)}</span>
+            <span class="badge" style="background:${p.bg}; color:${p.color};">${escapeHtml(idea.prioridad || "")}</span>
+            <span class="badge" style="background:${e.bg}; color:${e.color};">${formatEstado(idea.estado)}</span>
+          </div>
+
+          <div><strong>Descripción:</strong></div>
+          <div class="preserve-lines">${escapeHtml(idea.descripcion || "-")}</div>
+
+          <div class="meta">
+            ${isProjectType(idea.tipo)
+              ? `<strong>Fecha inicio:</strong> ${escapeHtml(idea.fechaInicio || "-")}<br><strong>Fecha prevista finalizar:</strong> ${escapeHtml(idea.fechaFinPrevista || "-")}`
+              : `<strong>Fecha:</strong> ${escapeHtml(idea.fecha || "-")}<br><strong>Hora:</strong> ${escapeHtml(idea.hora || "-")}`
+            }
+          </div>
+
+          <div class="block">
+            ${isProjectType(idea.tipo)
+              ? `
+                <div><strong>Tipo / área:</strong> ${escapeHtml(extra.tipoProyecto || "-")}</div>
+                <div style="margin-top:8px;"><strong>Plan de acciones:</strong></div>
+                ${acciones.length
+                  ? acciones.map((a, index) => `
+                      <div style="margin-top:8px; padding:8px; border:1px solid #e5e7eb; border-radius:8px; background:white;">
+                        <div><strong>Acción ${index + 1}</strong></div>
+                        <div><strong>Descripción:</strong></div>
+                        <div class="preserve-lines">${escapeHtml(a.descripcion || "-")}</div>
+                        <div><strong>Proveedor:</strong> ${escapeHtml(a.proveedor || "-")}</div>
+                        <div><strong>Estado:</strong> ${escapeHtml(formatEstado(a.estado || "-"))}</div>
+                      </div>
+                    `).join("")
+                  : `<div style="margin-top:8px;">Sin acciones definidas.</div>`}
+              `
+              : (extraEntries.length
+                  ? extraEntries.map(([k, v]) => `<div><strong>${escapeHtml(k)}:</strong> <span class="preserve-lines">${escapeHtml(v)}</span></div>`).join("")
+                  : "Sin datos adicionales")
+            }
+          </div>
+        </div>
+      `;
+    }
+
+    function buildPrintDocument(title, ideas, format = "pdf") {
+      const fontSize = format === "word" ? '10pt' : '8px';
+      return `
+        <html>
+        <head>
+          <meta charset="utf-8">
+          <title>${escapeHtml(title)}</title>
+          <style>
+            body {
+              font-family: Arial, sans-serif;
+              font-size: ${fontSize};
+              padding: 10px;
+              color: #1f2937;
+            }
+            h1 {
+              margin: 0 0 8px 0;
+              font-size: 16px;
+            }
+            h2 {
+              margin: 0 0 6px 0;
+              font-size: 12px;
+            }
+            .item {
+              border: 1px solid #ccc;
+              border-radius: 8px;
+              padding: 10px;
+              margin-bottom: 10px;
+              page-break-inside: avoid;
+              background: white;
+            }
+            .meta {
+              color: #555;
+              font-size: ${format === "word" ? '10pt' : '8px'};
+              margin-top: 6px;
+              line-height: 1.4;
+            }
+            .block {
+              margin-top: 6px;
+              background: #f7f7f7;
+              padding: 6px;
+              border-radius: 6px;
+            }
+            .badges {
+              margin: 5px 0 6px 0;
+            }
+            .badge {
+              display: inline-block;
+              padding: 2px 6px;
+              border-radius: 999px;
+              font-size: ${format === "word" ? '10pt' : '8px'};
+              font-weight: bold;
+              margin-right: 4px;
+            }
+            .preserve-lines {
+              white-space: pre-wrap;
+            }
+          </style>
+        </head>
+        <body>
+          <h1>${escapeHtml(title)}</h1>
+          <p>Total: ${ideas.length}</p>
+          ${ideas.map(idea => renderIdeaCardHTML(idea, true)).join("")}
+        </body>
+        </html>
+      `;
+    }
+
+    function tipoColors(tipo) {
+      const colors = {
+        llamada: { bg: "#dbeafe", color: "#1d4ed8" },
+        mejora: { bg: "#fae8ff", color: "#a21caf" },
+        inversion: { bg: "#ede9fe", color: "#6d28d9" },
+        mantenimiento: { bg: "#dcfce7", color: "#15803d" },
+        administrativa: { bg: "#fef3c7", color: "#92400e" },
+        recursos_humanos: { bg: "#fee2e2", color: "#b91c1c" },
+        reunion_visita: { bg: "#d1fae5", color: "#065f46" },
+        medio_ambiente: { bg: "#cffafe", color: "#155e75" },
+        prevencion_riesgos: { bg: "#ffe4e6", color: "#be123c" }
+      };
+      return colors[tipo] || { bg: "#f3f4f6", color: "#374151" };
+    }
+
+    function prioridadColors(prio) {
+      const colors = {
+        baja: { bg: "#f3f4f6", color: "#374151" },
+        media: { bg: "#fef3c7", color: "#92400e" },
+        alta: { bg: "#fee2e2", color: "#b91c1c" },
+        urgente: { bg: "#fecaca", color: "#7f1d1d" }
+      };
+      return colors[prio] || { bg: "#f3f4f6", color: "#374151" };
+    }
+
+    function estadoColors(est) {
+      const colors = {
+        pendiente: { bg: "#e0f2fe", color: "#075985" },
+        en_curso: { bg: "#fef3c7", color: "#92400e" },
+        hecha: { bg: "#dcfce7", color: "#166534" },
+        descartada: { bg: "#f3f4f6", color: "#4b5563" }
+      };
+      return colors[est] || { bg: "#f3f4f6", color: "#374151" };
+    }
+
+
+    function isIPhoneLike() {
+      return /iPhone|iPad|iPod/i.test(navigator.userAgent);
+    }
+
+    function downloadBlobWithFallback(blob, filename, mimeType = "") {
+      const file = new File([blob], filename, { type: mimeType || blob.type || "application/octet-stream" });
+
+      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        navigator.share({
+          files: [file],
+          title: filename
+        }).catch(() => {
+          const a = document.createElement("a");
+          a.href = URL.createObjectURL(blob);
+          a.download = filename;
+          a.click();
+          setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+        });
+        return;
+      }
+
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = filename;
+      a.click();
+      setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+    }
+
+    function openPrintDocument(html) {
+      const printWindow = window.open("", "_blank");
+      if (printWindow) {
+        printWindow.document.open();
+        printWindow.document.write(html);
+        printWindow.document.close();
+        printWindow.focus();
+        setTimeout(() => printWindow.print(), 500);
+        return;
+      }
+
+      const blob = new Blob([html], { type: "text/html" });
+      const url = URL.createObjectURL(blob);
+      window.location.href = url;
+      setTimeout(() => URL.revokeObjectURL(url), 5000);
+    }
+
+    function printSelectedToPDF() {
+      const ideas = getSelectedIdeas();
+      if (!ideas.length) {
+        alert("Selecciona al menos una idea.");
+        return;
+      }
+
+      const html = buildPrintDocument("Ideas seleccionadas", ideas, "pdf");
+      openPrintDocument(html);
+    }
+
+    function exportSelectedToWord() {
+      const ideas = getSelectedIdeas();
+      if (!ideas.length) {
+        alert("Selecciona al menos una idea.");
+        return;
+      }
+
+      const html = buildPrintDocument("Ideas seleccionadas", ideas, "word");
+      const blob = new Blob(["﻿" + html], { type: "application/msword" });
+      downloadBlobWithFallback(blob, "ideas_seleccionadas.doc", "application/msword");
+    }
+
+    function printCurrentIdeaToPDF() {
+      const current = getCurrentFormIdeaForPrint();
+      if (!current) return;
+
+      const html = buildPrintDocument(`Idea: ${current.titulo}`, [current], "pdf");
+      openPrintDocument(html);
+    }
+
+    function exportCurrentIdeaToWord() {
+      const current = getCurrentFormIdeaForPrint();
+      if (!current) return;
+
+      const html = buildPrintDocument(`Idea: ${current.titulo}`, [current], "word");
+      const blob = new Blob(["﻿" + html], { type: "application/msword" });
+      downloadBlobWithFallback(blob, `idea_${(current.titulo || 'sin_titulo').replace(/[\/:*?"<>|]/g, "_")}.doc`, "application/msword");
+    }
+
+    function buildExcelIdeaBlock(idea) {
+      const extra = idea.extra || {};
+      const extraEntries = Object.entries(extra).filter(([k, v]) => k !== "planAcciones" && k !== "tareas" && k !== "tipoProyecto" && v);
+      const acciones = Array.isArray(extra.planAcciones)
+        ? extra.planAcciones
+        : (Array.isArray(extra.tareas) ? extra.tareas : []);
+
+      const lines = [
+        `ID: ${idea.id ?? ""}`,
+        `TIPO: ${formatTipo(idea.tipo)}`,
+        `TITULO: ${idea.titulo || ""}`,
+        `DESCRIPCION: ${idea.descripcion || ""}`,
+        `PRIORIDAD: ${idea.prioridad || ""}`,
+        `ESTADO: ${formatEstado(idea.estado || "")}`
+      ];
+
+      if (isProjectType(idea.tipo)) {
+        lines.push(`FECHA INICIO: ${idea.fechaInicio || ""}`);
+        lines.push(`FECHA PREVISTA FINALIZAR: ${idea.fechaFinPrevista || ""}`);
+        lines.push(`TIPO / AREA: ${extra.tipoProyecto || ""}`);
+      } else {
+        lines.push(`FECHA: ${idea.fecha || ""}`);
+        lines.push(`HORA: ${idea.hora || ""}`);
+      }
+
+      if (acciones.length) {
+        lines.push("PLAN DE ACCIONES:");
+        acciones.forEach((accion, index) => {
+          lines.push(`Acción ${index + 1}: ${accion.descripcion || ""}`);
+          lines.push(`Proveedor: ${accion.proveedor || ""}`);
+          lines.push(`Estado: ${formatEstado(accion.estado || "")}`);
+        });
+      }
+
+      if (extraEntries.length) {
+        lines.push("DATOS EXTRA:");
+        extraEntries.forEach(([k, v]) => {
+          lines.push(`${k}: ${v}`);
+        });
+      }
+
+      return lines.join("\n");
+    }
+
+    function exportSelectedToExcel() {
+      const ideas = getSelectedIdeas();
+      if (!ideas.length) {
+        alert("Selecciona al menos una idea.");
+        return;
+      }
+
+      const html = `
+        <html>
+        <head>
+          <meta charset="utf-8">
+          <style>
+            body { font-family: Arial, sans-serif; }
+            table { border-collapse: collapse; width: 100%; }
+            th, td {
+              border: 1px solid #cbd5e1;
+              padding: 8px;
+              vertical-align: top;
+              text-align: left;
+              white-space: pre-wrap;
+            }
+            th { background: #e2e8f0; }
+          </style>
+        </head>
+        <body>
+          <table>
+            <tr>
+              <th>IDEA</th>
+            </tr>
+            ${ideas.map(idea => `<tr><td>${escapeHtml(buildExcelIdeaBlock(idea))}</td></tr>`).join("")}
+          </table>
+        </body>
+        </html>
+      `;
+
+      const blob = new Blob(["﻿" + html], { type: "application/vnd.ms-excel;charset=utf-8;" });
+      downloadBlobWithFallback(blob, "ideas_seleccionadas.xls", "application/vnd.ms-excel;charset=utf-8;");
+    }
+
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+
+      if (!titulo.value.trim()) {
+        alert("El título es obligatorio.");
+        return;
+      }
+
+      const idea = createIdeaObject();
+      const ideas = normalizeIdeasArray(loadIdeas());
+      const index = ideas.findIndex(i => i.id === idea.id);
+
+      if (index >= 0) ideas[index] = idea;
+      else ideas.push(idea);
+
+      saveIdeas(ideas);
+      resetForm();
+      renderIdeas();
+    });
+
+    tipo.addEventListener("change", () => {
+      renderDynamicFields({});
+    });
+
+    [search, filterTipo, filterEstado, sortBy].forEach(el => {
+      el.addEventListener("input", renderIdeas);
+      el.addEventListener("change", renderIdeas);
+    });
+
+    cancelEditBtn.addEventListener("click", resetForm);
+
+    selectVisibleBtn.addEventListener("click", () => {
+      getIdeasFiltered().forEach(idea => selectedIdeaIds.add(idea.id));
+      updateSelectionCount();
+      renderIdeas();
+    });
+
+    clearSelectionBtn.addEventListener("click", () => {
+      selectedIdeaIds.clear();
+      updateSelectionCount();
+      renderIdeas();
+    });
+
+    printPdfBtn.addEventListener("click", printSelectedToPDF);
+    printWordBtn.addEventListener("click", exportSelectedToWord);
+    exportExcelBtn.addEventListener("click", exportSelectedToExcel);
+    printCurrentPdfBtn.addEventListener("click", printCurrentIdeaToPDF);
+    printCurrentWordBtn.addEventListener("click", exportCurrentIdeaToWord);
+    linkJsonFolderBtn.addEventListener("click", () => {
+      alert("En iPhone esta función no está disponible. Usa “Exportar JSON” para guardar una copia y “Importar JSON” para recuperarla.");
+    });
+    saveJsonNowBtn.addEventListener("click", () => {
+      const ideas = normalizeIdeasArray(loadIdeas());
+      const blob = new Blob([JSON.stringify(ideas, null, 2)], { type: "application/json" });
+      downloadBlobWithFallback(blob, "ideas.json", "application/json");
+    });
+
+    function editIdea(id) {
+      const ideas = normalizeIdeasArray(loadIdeas());
+      const idea = ideas.find(i => i.id === id);
+      if (!idea) return;
+
+      ideaId.value = idea.id;
+      tipo.value = idea.tipo;
+      titulo.value = idea.titulo || "";
+      descripcion.value = idea.descripcion || "";
+      fecha.value = idea.fecha || "";
+      hora.value = idea.hora || "";
+      fechaInicio.value = idea.fechaInicio || "";
+      fechaFinPrevista.value = idea.fechaFinPrevista || "";
+      prioridad.value = idea.prioridad || "media";
+      estado.value = idea.estado || "pendiente";
+
+      renderDynamicFields(idea.extra || {});
+      formTitle.textContent = "Editar idea";
+      saveBtn.textContent = "Guardar cambios";
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function markDone(id) {
+      const ideas = normalizeIdeasArray(loadIdeas());
+      const index = ideas.findIndex(i => i.id === id);
+      if (index < 0) return;
+      ideas[index].estado = "hecha";
+      saveIdeas(ideas);
+      renderIdeas();
+    }
+
+    function deleteIdea(id) {
+      if (!confirm("¿Seguro que quieres borrar esta idea?")) return;
+      const ideas = normalizeIdeasArray(loadIdeas()).filter(i => i.id !== id);
+      saveIdeas(ideas);
+      selectedIdeaIds.delete(id);
+      if (Number(ideaId.value) === id) resetForm();
+      renderIdeas();
+    }
+
+    function duplicateIdea(id) {
+      const ideas = normalizeIdeasArray(loadIdeas());
+      const found = ideas.find(i => i.id === id);
+      if (!found) return;
+
+      const copy = JSON.parse(JSON.stringify(found));
+      copy.id = generateId();
+      copy.creado = new Date().toLocaleString("es-ES");
+      copy.titulo = `${found.titulo} (copia)`;
+
+      ideas.push(normalizeIdea(copy));
+      saveIdeas(ideas);
+      renderIdeas();
+    }
+
+    exportBtn.addEventListener("click", () => {
+      const ideas = normalizeIdeasArray(loadIdeas());
+      const blob = new Blob([JSON.stringify(ideas, null, 2)], { type: "application/json" });
+      downloadBlobWithFallback(blob, "ideas_exportadas.json", "application/json");
+    });
+
+    importBtn.addEventListener("click", () => {
+      importFile.click();
+    });
+
+    importFile.addEventListener("change", (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        try {
+          const data = JSON.parse(event.target.result);
+
+          if (!Array.isArray(data)) {
+            alert("El archivo no tiene un formato válido.");
+            return;
+          }
+
+          const normalizedData = normalizeIdeasArray(data);
+
+          saveIdeas(normalizedData);
+          selectedIdeaIds.clear();
+          resetForm();
+          renderIdeas();
+          alert("Datos importados correctamente.");
+        } catch {
+          alert("No se pudo leer el archivo JSON.");
+        }
+      };
+
+      reader.readAsText(file);
+      importFile.value = "";
+    });
+
+    clearAllBtn.addEventListener("click", () => {
+      if (!confirm("¿Seguro que quieres eliminar todas las ideas guardadas?")) return;
+      saveIdeas([]);
+      selectedIdeaIds.clear();
+      resetForm();
+      renderIdeas();
+    });
+
+    function formatDateForICS(dateObj) {
+      const yyyy = dateObj.getFullYear();
+      const mm = String(dateObj.getMonth() + 1).padStart(2, "0");
+      const dd = String(dateObj.getDate()).padStart(2, "0");
+      const hh = String(dateObj.getHours()).padStart(2, "0");
+      const mi = String(dateObj.getMinutes()).padStart(2, "0");
+      const ss = String(dateObj.getSeconds()).padStart(2, "0");
+      return `${yyyy}${mm}${dd}T${hh}${mi}${ss}`;
+    }
+
+    function escapeICS(value) {
+      return String(value || "")
+        .replace(/\\/g, "\\\\")
+        .replace(/\n/g, "\\n")
+        .replace(/,/g, "\\,")
+        .replace(/;/g, "\\;");
+    }
+
+    function buildStartEndDates(idea) {
+      if (!idea.fecha) return null;
+      const startHour = idea.hora || (idea.tipo === "llamada" ? "09:00" : "10:00");
+      const start = new Date(`${idea.fecha}T${startHour}:00`);
+      const minutes = idea.tipo === "llamada" ? 30 : 60;
+      const end = new Date(start.getTime() + minutes * 60000);
+      return { start, end };
+    }
+
+    function exportIdeaToOutlook(id) {
+      const ideas = normalizeIdeasArray(loadIdeas());
+      const idea = ideas.find(i => i.id === id);
+      if (!idea) return;
+
+      if (!canSendToOutlook(idea.tipo)) {
+        alert("Outlook solo está disponible para LLAMADA y REUNION/VISITA.");
+        return;
+      }
+
+      if (!idea.fecha) {
+        alert("Esta idea no tiene fecha. Añade una fecha antes de enviarla a Outlook.");
+        return;
+      }
+
+      const dates = buildStartEndDates(idea);
+      if (!dates) {
+        alert("No se pudo generar la cita de Outlook.");
+        return;
+      }
+
+      const { start, end } = dates;
+      const extra = idea.extra || {};
+
+      let subject = idea.titulo || "Idea";
+      if (idea.tipo === "llamada") subject = `Llamada: ${idea.titulo}`;
+      if (idea.tipo === "reunion_visita") subject = `Reunión/Visita: ${idea.titulo}`;
+
+      let descriptionLines = [];
+      if (idea.descripcion) descriptionLines.push(idea.descripcion);
+      descriptionLines.push("");
+      descriptionLines.push(`Tipo: ${formatTipo(idea.tipo)}`);
+      descriptionLines.push(`Prioridad: ${idea.prioridad}`);
+      descriptionLines.push(`Estado: ${formatEstado(idea.estado)}`);
+
+      Object.entries(extra).forEach(([k, v]) => {
+        if (k === "planAcciones" || k === "tareas") return;
+        if (v && String(v).trim() !== "") descriptionLines.push(`${k}: ${v}`);
+      });
+
+      const description = descriptionLines.join("\n");
+      const location = extra.lugar || extra.empresa || "";
+      const uid = `${idea.id}@gestorideas.local`;
+      const now = formatDateForICS(new Date());
+
+      const icsContent = [
+        "BEGIN:VCALENDAR",
+        "VERSION:2.0",
+        "PRODID:-//GestorIdeas//ES",
+        "CALSCALE:GREGORIAN",
+        "BEGIN:VEVENT",
+        `UID:${uid}`,
+        `DTSTAMP:${now}`,
+        `DTSTART:${formatDateForICS(start)}`,
+        `DTEND:${formatDateForICS(end)}`,
+        `SUMMARY:${escapeICS(subject)}`,
+        `DESCRIPTION:${escapeICS(description)}`,
+        `LOCATION:${escapeICS(location)}`,
+        "END:VEVENT",
+        "END:VCALENDAR"
+      ].join("\r\n");
+
+      const blob = new Blob([icsContent], { type: "text/calendar;charset=utf-8" });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = `${subject.replace(/[\\/:*?"<>|]/g, "_")}.ics`;
+      a.click();
+      URL.revokeObjectURL(a.href);
+    }
+
+    if (window.matchMedia && window.matchMedia("(display-mode: standalone)").matches) {
+      document.body.classList.add("standalone");
+      document.getElementById("iosInstallHelp").style.display = "none";
+    }
+    if (window.navigator && window.navigator.standalone) {
+      document.body.classList.add("standalone");
+      document.getElementById("iosInstallHelp").style.display = "none";
+    }
+
+    window.addEventListener("online", updateConnectionState);
+    window.addEventListener("offline", updateConnectionState);
+
+    renderDynamicFields({});
+    initLinkedJsonFolder();
+    renderIdeas();
+    updateConnectionState();
+
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker.register("./service-worker-ideas-app.js").catch(() => {});
+      });
+    }
+
+    window.editIdea = editIdea;
+    window.markDone = markDone;
+    window.deleteIdea = deleteIdea;
+    window.duplicateIdea = duplicateIdea;
+    window.removeTask = removeTask;
+    window.exportIdeaToOutlook = exportIdeaToOutlook;
+    window.toggleIdeaSelection = toggleIdeaSelection;
+  </script>
+</body>
+</html>

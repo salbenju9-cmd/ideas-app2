@@ -1,0 +1,28 @@
+{
+  "name": "Gestor de Ideas",
+  "short_name": "Ideas",
+  "start_url": "./ideas_iphone_app.html",
+  "display": "standalone",
+  "background_color": "#f3f6fb",
+  "theme_color": "#2563eb",
+  "lang": "es",
+  "description": "Gestor de ideas adaptado para iPhone con modo app y acceso sin conexión.",
+  "icons": [
+    {
+      "src": "./icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "./icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "./icon-180.png",
+      "sizes": "180x180",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}
